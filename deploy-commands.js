@@ -6,7 +6,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const commands = [
   new SlashCommandBuilder()
     .setName("card")
-    .setDescription("会員カード表示")
+    .setDescription("会員カードを表示")
     .toJSON()
 ];
 
