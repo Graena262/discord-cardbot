@@ -1,24 +1,44 @@
+const { Client, GatewayIntentBits } = require("discord.js");
+
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds]
+});
+
+// エラー可視化（超重要）
+process.on("unhandledRejection", console.error);
+process.on("uncaughtException", console.error);
+
+// コマンド登録（起動時に1回）
+require("./deploy-commands.js");
+
+client.once("ready", () => {
+  console.log(`Bot起動: ${client.user.tag}`);
+});
+
 client.on("interactionCreate", async (interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
 
     if (interaction.commandName === "card") {
+      console.log("card受信");
 
-      // ★即応答（タイムアウト防止）
-      await interaction.deferReply();
+      await interaction.deferReply().catch(console.error);
 
-      // ★処理（将来重くなってもOK）
-      const reply = "🎴 会員カード表示OK";
+      await interaction.editReply("🎴 会員カード表示OK").catch(console.error);
 
-      // ★確定返信
-      await interaction.editReply(reply);
+      console.log("card完了");
     }
   } catch (err) {
     console.error("interaction error:", err);
 
-    // 失敗時も落ちないようにする
-    if (interaction.deferred || interaction.replied) {
-      await interaction.editReply("エラーが発生しました");
+    try {
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply("エラーが発生しました");
+      }
+    } catch (e) {
+      console.error("fallback error:", e);
     }
   }
 });
+
+client.login(process.env.TOKEN);
