@@ -1,3 +1,4 @@
+console.log("NEW VERSION 123");
 console.log("NEW VERSION ACTIVE");
 { Client, GatewayIntentBits } = require("discord.js");
 const { createCanvas } = require("canvas");
