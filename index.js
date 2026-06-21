@@ -31,11 +31,7 @@ client.on("interactionCreate", async (interaction) => {
             value: interaction.user.username,
             inline: true
           },
-          {
-            name: "ID",
-            value: interaction.user.id,
-            inline: true
-          }
+          
         ],
         thumbnail: {
           url: interaction.user.displayAvatarURL()
