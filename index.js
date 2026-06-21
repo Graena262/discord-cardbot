@@ -1,13 +1,14 @@
-const { Client, GatewayIntentBits } = require("discord.js");
+client.on("interactionCreate", async (interaction) => {
+  try {
+    if (!interaction.isChatInputCommand()) return;
 
-const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+    if (interaction.commandName === "card") {
+      await interaction.reply({
+        content: "🎴 会員カード表示OK",
+        ephemeral: false
+      });
+    }
+  } catch (err) {
+    console.error(err);
+  }
 });
-
-require("./deploy-commands.js");
-
-client.once("ready", () => {
-  console.log("Bot起動");
-});
-
-client.login(process.env.TOKEN);
