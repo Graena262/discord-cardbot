@@ -1,14 +1,14 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 
+// ★重要：Guildsだけ（安全版）
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers
+    GatewayIntentBits.Guilds
   ]
 });
 
-// エラー可視化
+// エラー表示
 process.on("unhandledRejection", console.error);
 process.on("uncaughtException", console.error);
 
@@ -47,20 +47,11 @@ client.on("interactionCreate", async (interaction) => {
 
       const userData = data[userId];
 
-      // 安全な名前取得
+      // 安全な名前取得（GuildMembers無しでも動く）
       const displayName =
         interaction.member?.displayName ||
         interaction.user.globalName ||
         interaction.user.username;
-
-      // ポケモン安全処理
-      const pokemonRaw = userData?.pokemon ?? "未設定";
-      const pokemon = pokemonRaw.toLowerCase();
-
-      const imageUrl =
-        pokemonRaw !== "未設定"
-          ? `https://img.pokemondb.net/artwork/large/${pokemon}.jpg`
-          : null;
 
       fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
 
@@ -92,10 +83,6 @@ client.on("interactionCreate", async (interaction) => {
         )
         .setFooter({ text: "Member Card System" });
 
-      if (imageUrl) {
-        embed.setImage(imageUrl);
-      }
-
       await interaction.editReply({ embeds: [embed] });
     }
 
@@ -125,7 +112,7 @@ client.on("interactionCreate", async (interaction) => {
 
       fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
 
-      await interaction.editReply(`🐾 好きなポケモンを「${pokemon}」に設定したよ`);
+      await interaction.editReply(`🐾 「${pokemon}」に設定したよ`);
     }
 
   } catch (err) {
