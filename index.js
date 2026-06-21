@@ -1,5 +1,4 @@
-console.log("NEW VERSION 123");
-console.log("NEW VERSION ACTIVE");
+console.log("🔥 DEPLOY TEST 2026");
 { Client, GatewayIntentBits } = require("discord.js");
 const { createCanvas } = require("canvas");
 const fs = require("fs");
