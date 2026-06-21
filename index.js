@@ -4,7 +4,7 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
-// 1回だけコマンド登録
+// ★コマンド登録を強制実行
 require("./deploy-commands.js");
 
 client.once("ready", () => {
