@@ -1,4 +1,5 @@
-console.log("🔥🔥🔥 NEW VERSION 999");
+console.log("🔥🔥🔥 NEW VERSION 1000");
+
 const { Client, GatewayIntentBits } = require("discord.js");
 
 console.log("🔥 INDEX LOADED");
@@ -17,7 +18,10 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "card") {
     console.log("📩 /card received");
 
-    await interaction.reply("NEW CARD VERSION OK");
+    await interaction.reply({
+      content: "TEST1000",
+      ephemeral: false,
+    });
   }
 });
 
