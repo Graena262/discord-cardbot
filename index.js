@@ -1,10 +1,11 @@
-const { Client, GatewayIntentBits } = require("discord.js");
+　const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
+const fs = require("fs");
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
-// エラー可視化（重要）
+// エラー可視化
 process.on("unhandledRejection", console.error);
 process.on("uncaughtException", console.error);
 
@@ -22,30 +23,57 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.commandName === "card") {
       await interaction.deferReply();
 
-      const embed = {
-        title: "🎴 会員カード",
-        color: 0x00bfff,
-        fields: [
+      const userId = interaction.user.id;
+
+      // データ読み込み
+      let data = {};
+      if (fs.existsSync("./data.json")) {
+        data = JSON.parse(fs.readFileSync("./data.json", "utf8"));
+      }
+
+      // 初回登録
+      if (!data[userId]) {
+        data[userId] = {
+          memberNo: Object.keys(data).length + 1,
+          pokemon: "未設定",
+          createdAt: new Date().toISOString()
+        };
+      }
+
+      const userData = data[userId];
+
+      // 保存
+      fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
+
+      const embed = new EmbedBuilder()
+        .setTitle("🎴 会員カード")
+        .setColor(0x00bfff)
+        .setThumbnail(interaction.user.displayAvatarURL())
+        .addFields(
+          {
+            name: "会員No.",
+            value: String(userData.memberNo),
+            inline: true
+          },
           {
             name: "名前",
             value: interaction.user.username,
             inline: true
           },
-          
-        ],
-        thumbnail: {
-          url: interaction.user.displayAvatarURL()
-        },
-        footer: {
-          text: "Card System"
-        }
-      };
+          {
+            name: "好きなポケモン",
+            value: userData.pokemon,
+            inline: true
+          },
+          {
+            name: "入会日",
+            value: userData.createdAt.split("T")[0],
+            inline: false
+          }
+        )
+        .setFooter({ text: "Member Card System" });
 
-      await interaction.editReply({
-        embeds: [embed]
-      });
-
-      console.log("card完了");
+      await interaction.editReply({ embeds: [embed] });
     }
   } catch (err) {
     console.error("interaction error:", err);
