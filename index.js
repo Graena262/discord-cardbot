@@ -1,14 +1,12 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 
-// ★重要：Guildsだけ（安全版）
+// ★超安全設定（Guildsのみ）
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds
-  ]
+  intents: [GatewayIntentBits.Guilds]
 });
 
-// エラー表示
+// エラー可視化
 process.on("unhandledRejection", console.error);
 process.on("uncaughtException", console.error);
 
@@ -36,7 +34,6 @@ client.on("interactionCreate", async (interaction) => {
 
       const userId = interaction.user.id;
 
-      // 初回登録
       if (!data[userId]) {
         data[userId] = {
           memberNo: Object.keys(data).length + 1,
@@ -47,9 +44,7 @@ client.on("interactionCreate", async (interaction) => {
 
       const userData = data[userId];
 
-      // 安全な名前取得（GuildMembers無しでも動く）
       const displayName =
-        interaction.member?.displayName ||
         interaction.user.globalName ||
         interaction.user.username;
 
@@ -60,26 +55,10 @@ client.on("interactionCreate", async (interaction) => {
         .setColor(0x00bfff)
         .setThumbnail(interaction.user.displayAvatarURL())
         .addFields(
-          {
-            name: "会員No.",
-            value: String(userData.memberNo),
-            inline: true
-          },
-          {
-            name: "名前",
-            value: displayName,
-            inline: true
-          },
-          {
-            name: "好きなポケモン",
-            value: userData.pokemon,
-            inline: true
-          },
-          {
-            name: "入会日",
-            value: userData.createdAt.split("T")[0],
-            inline: false
-          }
+          { name: "会員No.", value: String(userData.memberNo), inline: true },
+          { name: "名前", value: displayName, inline: true },
+          { name: "好きなポケモン", value: userData.pokemon, inline: true },
+          { name: "入会日", value: userData.createdAt.split("T")[0], inline: false }
         )
         .setFooter({ text: "Member Card System" });
 
