@@ -1,7 +1,6 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 
-// ★安定構成（Guildsのみ）
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
@@ -10,7 +9,7 @@ const client = new Client({
 process.on("unhandledRejection", console.error);
 process.on("uncaughtException", console.error);
 
-// ★コマンド登録を起動時に実行（重要）
+// コマンド登録
 require("./deploy-commands.js");
 
 client.once("ready", () => {
@@ -34,7 +33,6 @@ client.on("interactionCreate", async (interaction) => {
 
       const userId = interaction.user.id;
 
-      // 初回登録
       if (!data[userId]) {
         data[userId] = {
           memberNo: Object.keys(data).length + 1,
@@ -52,32 +50,35 @@ client.on("interactionCreate", async (interaction) => {
       fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
 
       const embed = new EmbedBuilder()
-        .setTitle("🎴 会員カード")
-        .setColor(0x00bfff)
-        .setThumbnail(interaction.user.displayAvatarURL())
+        .setTitle("MEMBER CARD")
+        .setColor(0x2f80ed)
+        .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }))
         .addFields(
           {
-            name: "会員No.",
-            value: String(userData.memberNo),
+            name: "NAME",
+            value: `\`${displayName}\``,
             inline: true
           },
           {
-            name: "名前",
-            value: displayName,
+            name: "MEMBER NO",
+            value: `#${userData.memberNo}`,
             inline: true
           },
           {
-            name: "好きなポケモン",
+            name: "FAVORITE POKEMON",
             value: userData.pokemon,
             inline: true
           },
           {
-            name: "入会日",
+            name: "JOIN DATE",
             value: userData.createdAt.split("T")[0],
             inline: false
           }
         )
-        .setFooter({ text: "Member Card System" });
+        // ★カード枠画像
+        .setImage("https://i.imgur.com/0Z8XKXy.png")
+        .setFooter({ text: "Pokemon Member System" })
+        .setTimestamp();
 
       await interaction.editReply({ embeds: [embed] });
     }
@@ -108,7 +109,7 @@ client.on("interactionCreate", async (interaction) => {
 
       fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
 
-      await interaction.editReply(`🐾 「${pokemon}」に設定したよ`);
+      await interaction.editReply(`「${pokemon}」に設定したよ`);
     }
 
   } catch (err) {
