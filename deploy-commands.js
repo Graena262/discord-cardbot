@@ -14,8 +14,9 @@ const rest = new REST({ version: "10" }).setToken(TOKEN);
 
 (async () => {
   try {
+    // ★ここが重要（全削除しない）
     await rest.put(
-      Routes.applicationCommands(CLIENT_ID),
+      Routes.applicationGuildCommands(CLIENT_ID, process.env.GUILD_ID),
       { body: commands }
     );
 
