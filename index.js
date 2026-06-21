@@ -4,11 +4,11 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
-// エラー可視化（超重要）
+// エラー可視化（重要）
 process.on("unhandledRejection", console.error);
 process.on("uncaughtException", console.error);
 
-// コマンド登録（起動時に1回）
+// コマンド登録
 require("./deploy-commands.js");
 
 client.once("ready", () => {
@@ -20,11 +20,34 @@ client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
     if (interaction.commandName === "card") {
-      console.log("card受信");
+      await interaction.deferReply();
 
-      await interaction.deferReply().catch(console.error);
+      const embed = {
+        title: "🎴 会員カード",
+        color: 0x00bfff,
+        fields: [
+          {
+            name: "名前",
+            value: interaction.user.username,
+            inline: true
+          },
+          {
+            name: "ID",
+            value: interaction.user.id,
+            inline: true
+          }
+        ],
+        thumbnail: {
+          url: interaction.user.displayAvatarURL()
+        },
+        footer: {
+          text: "Card System"
+        }
+      };
 
-      await interaction.editReply("🎴 会員カード表示OK").catch(console.error);
+      await interaction.editReply({
+        embeds: [embed]
+      });
 
       console.log("card完了");
     }
