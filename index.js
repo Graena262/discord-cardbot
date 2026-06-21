@@ -1,3 +1,4 @@
+console.log("🔥🔥🔥 NEW VERSION 999");
 const { Client, GatewayIntentBits } = require("discord.js");
 
 console.log("🔥 INDEX LOADED");
