@@ -1,4 +1,4 @@
-　const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 
 const client = new Client({
@@ -20,6 +20,7 @@ client.on("interactionCreate", async (interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
 
+    // ■ 会員カード
     if (interaction.commandName === "card") {
       await interaction.deferReply();
 
@@ -57,7 +58,7 @@ client.on("interactionCreate", async (interaction) => {
           },
           {
             name: "名前",
-            value: interaction.user.username,
+            value: interaction.member.displayName, // ←ここが重要
             inline: true
           },
           {
@@ -75,6 +76,34 @@ client.on("interactionCreate", async (interaction) => {
 
       await interaction.editReply({ embeds: [embed] });
     }
+
+    // ■ ポケモン設定
+    if (interaction.commandName === "setpokemon") {
+      await interaction.deferReply();
+
+      const pokemon = interaction.options.getString("name");
+      const userId = interaction.user.id;
+
+      let data = {};
+      if (fs.existsSync("./data.json")) {
+        data = JSON.parse(fs.readFileSync("./data.json", "utf8"));
+      }
+
+      if (!data[userId]) {
+        data[userId] = {
+          memberNo: Object.keys(data).length + 1,
+          pokemon: "未設定",
+          createdAt: new Date().toISOString()
+        };
+      }
+
+      data[userId].pokemon = pokemon;
+
+      fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
+
+      await interaction.editReply(`🐾 好きなポケモンを「${pokemon}」に設定したよ`);
+    }
+
   } catch (err) {
     console.error("interaction error:", err);
 
