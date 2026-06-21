@@ -1,50 +1,22 @@
-console.log("🔥 DEPLOY TEST 2026");
-{ Client, GatewayIntentBits } = require("discord.js");
-const { createCanvas } = require("canvas");
-const fs = require("fs");
+const { Client, GatewayIntentBits } = require("discord.js");
 
-// ★起動確認（超重要）
-console.log("🔥 INDEX LOADED (NEW VERSION)");
+console.log("🔥 INDEX LOADED");
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [GatewayIntentBits.Guilds],
 });
 
-process.on("unhandledRejection", console.error);
-process.on("uncaughtException", console.error);
-
-// コマンド登録
-requ
 client.once("ready", () => {
   console.log(`🤖 Bot起動: ${client.user.tag}`);
 });
 
 client.on("interactionCreate", async (interaction) => {
-  try {
-    if (!interaction.isChatInputCommand()) return;
+  if (!interaction.isChatInputCommand()) return;
 
-    // =====================
-    // ■ card（まずデバッグ）
-    // =====================
-    if (interaction.commandName === "card") {
+  if (interaction.commandName === "card") {
+    console.log("📩 /card received");
 
-      // ★ここ超重要：まず到達確認
-      console.log("📩 /card received");
-
-      await interaction.reply("NEW CARD VERSION OK");
-      return;
-    }
-
-  } catch (err) {
-    console.error("interaction error:", err);
-
-    try {
-      if (interaction.deferred || interaction.replied) {
-        await interaction.editReply("エラーが発生しました");
-      }
-    } catch (e) {
-      console.error("fallback error:", e);
-    }
+    await interaction.reply("NEW CARD VERSION OK");
   }
 });
 
