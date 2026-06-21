@@ -1,15 +1,14 @@
-const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
+const { createCanvas } = require("canvas");
 const fs = require("fs");
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
-// エラー表示
 process.on("unhandledRejection", console.error);
 process.on("uncaughtException", console.error);
 
-// コマンド登録
 require("./deploy-commands.js");
 
 client.once("ready", () => {
@@ -21,7 +20,7 @@ client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
     // =====================
-    // ■ 会員カード
+    // ■ 会員カード（画像生成）
     // =====================
     if (interaction.commandName === "card") {
       await interaction.deferReply();
@@ -36,7 +35,7 @@ client.on("interactionCreate", async (interaction) => {
       if (!data[userId]) {
         data[userId] = {
           memberNo: Object.keys(data).length + 1,
-          pokemon: "未設定",
+          pokemon: "pikachu",
           createdAt: new Date().toISOString()
         };
       }
@@ -49,38 +48,44 @@ client.on("interactionCreate", async (interaction) => {
 
       fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
 
-      const embed = new EmbedBuilder()
-        .setTitle("MEMBER CARD")
-        .setColor(0x2f80ed)
-        .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }))
-        .addFields(
-          {
-            name: "NAME",
-            value: `\`${displayName}\``,
-            inline: true
-          },
-          {
-            name: "MEMBER NO",
-            value: `#${userData.memberNo}`,
-            inline: true
-          },
-          {
-            name: "FAVORITE POKEMON",
-            value: userData.pokemon,
-            inline: true
-          },
-          {
-            name: "JOIN DATE",
-            value: userData.createdAt.split("T")[0],
-            inline: false
-          }
-        )
-        // ★カード枠画像
-        .setImage("https://i.imgur.com/0Z8XKXy.png")
-        .setFooter({ text: "Pokemon Member System" })
-        .setTimestamp();
+      // =====================
+      // ■ Canvasカード生成
+      // =====================
+      const canvas = createCanvas(600, 900);
+      const ctx = canvas.getContext("2d");
 
-      await interaction.editReply({ embeds: [embed] });
+      // 背景
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(0, 0, 600, 900);
+
+      // 枠
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 6;
+      ctx.strokeRect(20, 20, 560, 860);
+
+      // タイトル
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 40px Sans";
+      ctx.fillText("MEMBER CARD", 120, 80);
+
+      // 名前
+      ctx.font = "28px Sans";
+      ctx.fillText(`NAME: ${displayName}`, 50, 200);
+
+      // 会員No
+      ctx.fillText(`ID: #${userData.memberNo}`, 50, 270);
+
+      // ポケモン
+      ctx.fillText(`POKEMON: ${userData.pokemon}`, 50, 340);
+
+      // 日付
+      ctx.fillText(`DATE: ${userData.createdAt.split("T")[0]}`, 50, 410);
+
+      const buffer = canvas.toBuffer();
+
+      await interaction.editReply({
+        files: [{ attachment: buffer, name: "card.png" }]
+      });
     }
 
     // =====================
@@ -100,7 +105,7 @@ client.on("interactionCreate", async (interaction) => {
       if (!data[userId]) {
         data[userId] = {
           memberNo: Object.keys(data).length + 1,
-          pokemon: "未設定",
+          pokemon: "pikachu",
           createdAt: new Date().toISOString()
         };
       }
