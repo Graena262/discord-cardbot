@@ -1,7 +1,6 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 
-// ★重要：GuildMembers intent追加
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -24,17 +23,18 @@ client.on("interactionCreate", async (interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
 
+    // =====================
     // ■ 会員カード
+    // =====================
     if (interaction.commandName === "card") {
       await interaction.deferReply();
 
-      const userId = interaction.user.id;
-
-      // データ読み込み
       let data = {};
       if (fs.existsSync("./data.json")) {
         data = JSON.parse(fs.readFileSync("./data.json", "utf8"));
       }
+
+      const userId = interaction.user.id;
 
       // 初回登録
       if (!data[userId]) {
@@ -47,13 +47,21 @@ client.on("interactionCreate", async (interaction) => {
 
       const userData = data[userId];
 
-      // ★ここが重要：表示名の安全取得
+      // 安全な名前取得
       const displayName =
         interaction.member?.displayName ||
         interaction.user.globalName ||
         interaction.user.username;
 
-      // 保存
+      // ポケモン安全処理
+      const pokemonRaw = userData?.pokemon ?? "未設定";
+      const pokemon = pokemonRaw.toLowerCase();
+
+      const imageUrl =
+        pokemonRaw !== "未設定"
+          ? `https://img.pokemondb.net/artwork/large/${pokemon}.jpg`
+          : null;
+
       fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
 
       const embed = new EmbedBuilder()
@@ -84,10 +92,16 @@ client.on("interactionCreate", async (interaction) => {
         )
         .setFooter({ text: "Member Card System" });
 
+      if (imageUrl) {
+        embed.setImage(imageUrl);
+      }
+
       await interaction.editReply({ embeds: [embed] });
     }
 
+    // =====================
     // ■ ポケモン設定
+    // =====================
     if (interaction.commandName === "setpokemon") {
       await interaction.deferReply();
 
