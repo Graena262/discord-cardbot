@@ -1,11 +1,13 @@
-console.log("🔥🔥🔥 NEW VERSION 1000");
+const {
+  Client,
+  GatewayIntentBits,
+  AttachmentBuilder
+} = require("discord.js");
 
-const { Client, GatewayIntentBits } = require("discord.js");
-
-console.log("🔥 INDEX LOADED");
+const { createCanvas } = require("canvas");
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
+  intents: [GatewayIntentBits.Guilds]
 });
 
 client.once("ready", () => {
@@ -16,11 +18,43 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "card") {
-    console.log("📩 /card received");
+
+    const canvas = createCanvas(800, 500);
+    const ctx = canvas.getContext("2d");
+
+    // 背景
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 800, 500);
+
+    // 外枠
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(10, 10, 780, 480);
+
+    // タイトル帯
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, 800, 80);
+
+    // タイトル
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 40px Sans";
+    ctx.fillText("MEMBER CARD", 30, 50);
+
+    ctx.font = "24px Sans";
+    ctx.fillText("こわおねランド", 30, 75);
+
+    // 仮テキスト
+    ctx.fillStyle = "#000000";
+    ctx.font = "32px Sans";
+    ctx.fillText("画像生成テスト成功", 220, 260);
+
+    const attachment = new AttachmentBuilder(
+      canvas.toBuffer("image/png"),
+      { name: "member-card.png" }
+    );
 
     await interaction.reply({
-      content: "TEST1000",
-      ephemeral: false,
+      files: [attachment]
     });
   }
 });
