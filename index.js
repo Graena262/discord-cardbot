@@ -1,8 +1,12 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 
+// ★重要：GuildMembers intent追加
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers
+  ]
 });
 
 // エラー可視化
@@ -43,6 +47,12 @@ client.on("interactionCreate", async (interaction) => {
 
       const userData = data[userId];
 
+      // ★ここが重要：表示名の安全取得
+      const displayName =
+        interaction.member?.displayName ||
+        interaction.user.globalName ||
+        interaction.user.username;
+
       // 保存
       fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
 
@@ -58,7 +68,7 @@ client.on("interactionCreate", async (interaction) => {
           },
           {
             name: "名前",
-            value: interaction.member.displayName, // ←ここが重要
+            value: displayName,
             inline: true
           },
           {
