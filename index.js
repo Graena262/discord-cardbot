@@ -1,5 +1,5 @@
-console.log("NEW VERSION 2026");
-const { Client, GatewayIntentBits } = require("discord.js");
+console.log("NEW VERSION ACTIVE");
+{ Client, GatewayIntentBits } = require("discord.js");
 const { createCanvas } = require("canvas");
 const fs = require("fs");
 
