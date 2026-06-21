@@ -14,8 +14,7 @@ process.on("unhandledRejection", console.error);
 process.on("uncaughtException", console.error);
 
 // コマンド登録
-require("./deploy-commands.js");
-
+requ
 client.once("ready", () => {
   console.log(`🤖 Bot起動: ${client.user.tag}`);
 });
