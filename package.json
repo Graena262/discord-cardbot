@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-  "start": "echo HELLO_RAILWAY && node index.js"
-}
+    "start": "echo HELLO_RAILWAY && node index.js",
     "postinstall": "npm rebuild canvas"
   },
   "dependencies": {
